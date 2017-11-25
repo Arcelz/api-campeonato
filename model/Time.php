@@ -268,18 +268,18 @@ class Time implements IModel
     public function alterar()
     {
         $array = (new ClassToArray())->classToArray($this);
-        return (new AnimalDAO())->update($array);
+        return (new TimeDAO())->update($array);
     }
 
     public function pesquisar()
     {
         $array = (new ClassToArray())->classToArray($this);
-        return (new AnimalDAO())->retrave($array, $this->limite);
+        return (new TimeDAO())->retrave($array,(new OrganizacaoDAO())->retrave());
     }
 
     public function deletar()
     {
         $array = (new ClassToArray())->classToArray($this);
-        return (new AnimalDAO())->delete($array);
+        return (new TimeDAO())->delete($array);
     }
 }

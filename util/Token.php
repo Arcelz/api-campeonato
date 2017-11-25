@@ -36,7 +36,7 @@ class Token
             $oToken = $parser->parse($token);
             $signer = new Sha256();//define a assinatura da chave
             $expirado = $oToken->isExpired();
-            $tokenValido = $oToken->verify($signer, 'chave'); // onde contem a chave e é verificado o token
+            $tokenValido = $oToken->verify($signer, 'lolcamp@123@camp@api'); // onde contem a chave e é verificado o token
             if ($expirado == false && $tokenValido == true) {
                 return true;// retorna true quando o token estiver valido e com sua validade
             } else {
@@ -47,29 +47,12 @@ class Token
         }
     }
 
-    public function retornaClaims($token)
-    {
-        $parser = new Parser();
-        $oToken = $parser->parse($token);
-//        $claims["permissao"] = $oToken->getClaim('permicao');
-        $claims["usuario"] = $oToken->getClaim('usuario');
-        return $claims;
-    }
-    public function retornaIdUsuario()
-    {
-        $parser = new Parser();
-        $oToken = $parser->parse($this->recebeToken());
-        $claims = (Array)$oToken->getClaim('usuario');
-        return $claims["id"];
-    }
-
     public function token()
     {
         if (Token::tokenVazio()) {//verifica se o cabeçãlho com a authorization esta vazio
             $token = Token::recebeToken();
             if (Token::validaToken($token)) {
-                $claims = Token::retornaClaims($token);// recebe um array de permicoes
-                return $claims;
+                return true;
             } else {
                 header('HTTP/1.0 400 Token Invalido');
                 die();
@@ -80,20 +63,16 @@ class Token
         }
     }
 
-    public function gerarToken($usuario, $permicao = "normal")
+    public function gerarToken()
     {
         $signer = new Sha256();
-        return  (new Builder())->setIssuer('api.iflix')// Configures the issuer (iss claim)
-        ->setAudience('iflix.com')// Configures the audience (aud claim)
-        ->setId('123iflix456', true)// Configura o id (jti claim), replicating as a header item
+        return  (new Builder())->setIssuer('api.camp')// Configures the issuer (iss claim)
+        ->setAudience('lolcamp.com')// Configures the audience (aud claim)
+        ->setId('123camp456', true)// Configura o id (jti claim), replicating as a header item
         ->setIssuedAt(time())// Configures the time that the token was issue (iat claim)
         ->setNotBefore(time() + 60)// Configures the time that the token can be used (nbf claim)
         ->setExpiration(time() + 3600)// Configura a data de expiração do token
-        ->set('permicao', $permicao)// Define a permicao para o sistema
-        ->set('usuario', $usuario)//Define o emails
-
-        ->sign($signer, 'chave')// cria uma chave de assinatura privada
+        ->sign($signer, 'lolcamp@123@camp@api')// cria uma chave de assinatura privada
         ->getToken(); // Recupera o token
-
     }
 }

@@ -14,6 +14,7 @@ use model\Time;
 use model\validate\AnimalValidate;
 use model\validate\TimeValidate;
 use util\DataConversor;
+use util\Token;
 use view\View;
 
 class TimeController implements IController
@@ -54,12 +55,12 @@ class TimeController implements IController
 
     public function get($param)
     {
-        $animal = new Animal();
+        $time = new Time();
         if (!empty($param)) {
             foreach ($param as $key => $val) {
                 $var = "set" . ucfirst($key);
-                if (method_exists($animal, 'set' . ucfirst($key))) {
-                    $animal->$var($val);
+                if (method_exists($time, 'set' . ucfirst($key))) {
+                    $time->$var($val);
                 } else {
                     View::render([
                         "status" => 400,
@@ -68,52 +69,66 @@ class TimeController implements IController
                 }
             }
         }
-        View::render($animal->pesquisar());
+        View::render($time->pesquisar());
     }
 
     public function put($param)
     {
-        $animal = new Animal();
-        if (isset($param['idAnimal'])) {
-            $data = (new DataConversor())->converter();
-            $animal->setIdAnimal($param['idAnimal']);
-            if (isset($data['codigoBrinco'])) {
-                $animal->setCodigoBrinco($data['codigoBrinco']);
+        if ((new Token())->token()) {
+            $animal = new Time();
+            if (isset($param['id'])) {
+                $data = (new DataConversor())->converter();
+                $animal->setId($param['id']);
+                if (isset($data['nome'])) {
+                    $animal->setNome($data['nome']);
+                }
+                if (isset($data['jogador1'])) {
+                    $animal->setJogador1($data['jogador1']);
+                }
+                if (isset($data['jogador2'])) {
+                    $animal->setJogador2($data['jogador2']);
+                }
+                if (isset($data['jogador3'])) {
+                    $animal->setJogador3($data['jogador3']);
+                }
+                if (isset($data['jogador4'])) {
+                    $animal->setJogador4($data['jogador4']);
+                }
+                if (isset($data['jogador5'])) {
+                    $animal->setJogador5($data['jogador5']);
+                }
+                if (isset($data['jogador6'])) {
+                    $animal->setJogador6($data['jogador6']);
+                }
+                if (isset($data['jogador7'])) {
+                    $animal->setJogador7($data['jogador7']);
+                }
+                if (isset($data['jogador8'])) {
+                    $animal->setJogador8($data['jogador8']);
+                }
+                if (isset($data['jogador9'])) {
+                    $animal->setJogador9($data['jogador9']);
+                }
+                if (isset($data['jogador10'])) {
+                    $animal->setJogador10($data['jogador10']);
+                }
+                if (isset($data['pago'])) {
+                    $animal->setPago($data['pago']);
+                }
+
+                View::render($animal->alterar());
             }
-            if (isset($data['codigoRaca'])) {
-                $animal->setCodigoRaca($data['codigoRaca']);
-            }
-            if (isset($data['nomeAnimal'])) {
-                $animal->setNomeAnimal($data['nomeAnimal']);
-            }
-            if (isset($data['dataNascimento'])) {
-                $animal->setDataNascimento($data['dataNascimento']);
-            }
-            if (isset($data['fkPesagem'])) {
-                $animal->setFkPesagem($data['fkPesagem']);
-            }
-            if (isset($data['fkMae'])) {
-                $animal->setFkMae($data['fkMae']);
-            }
-            if (isset($data['fkPai'])) {
-                $animal->setFkPai($data['fkPai']);
-            }
-            if (isset($data['fkLote'])) {
-                $animal->setFkLote($data['fkLote']);
-            }
-            if (isset($data['fkFazenda'])) {
-                $animal->setFkFazenda($data['fkFazenda']);
-            }
-            View::render($animal->alterar());
         }
     }
 
     public function delete($param)
     {
-        $animal = new Animal();
-        if (isset($param['idAnimal'])) {
-            $animal->setIdAnimal($param['idAnimal']);
-            View::render($animal->deletar());
+        if ((new Token())->token()) {
+            $animal = new Time();
+            if (isset($param['id'])) {
+                $animal->setId($param['id']);
+                View::render($animal->deletar());
+            }
         }
     }
 }

@@ -58,12 +58,12 @@ class TimeDAO implements IDAO
             $db = Banco::conexao();
             $queryText = "";
             foreach ($obj as $key => $value) {
-                if ($key !== 'idAnimal')
-                $queryText .= $key . "=:" . $key . ",";
+                if ($key !== 'id')
+                    $queryText .= $key . "=:" . $key . ",";
             }
             $queryVal = substr_replace($queryText, '', -1);
 
-            $query = "UPDATE animais SET $queryVal WHERE idAnimal=:idAnimal";
+            $query = "UPDATE time SET $queryVal WHERE id=:id";
             $stmt = $db->prepare($query);
             foreach ($obj as $key => &$val) {
                 $stmt->bindParam($key, $val);
@@ -81,42 +81,38 @@ class TimeDAO implements IDAO
         ];
     }
 
-    public function retrave($obj, $limite)
+    public function retrave($obj, $org)
     {
         $codigo = 400;
         $messagem = "Erro inesperado";
         try {
             $db = Banco::conexao();
-            $query = "SELECT * FROM animais as an JOIN pais as pa ON pa.idPai=an.fkPai JOIN maes as ma ON ma.idMae=an.fkMae JOIN lotes as lo ON lo.idLote=an.fkLote JOIN fazendas as fa ON fa.idFazenda=an.fkFazenda JOIN pesagens as pe ON pe.idPesagem=an.fkPesagem WHERE an.status = 'ATIVO'";
-            if ($limite === null) {
-                $queryLimit = " LIMIT 10";
-            } else {
-                $queryLimit = " LIMIT :limite,10";
-            }
+            $query = "SELECT * FROM time ";
             if (!empty($obj)) {
-
-                if (isset($obj['idAnimal'])) {
-                    $query .= "AND idAnimal=:idAnimal";
-                    $query .= $queryLimit;
+                if (isset($obj['id'])) {
+                    $query .= "WHERE id=:id";
                     $stmt = $db->prepare($query);
-                    $stmt->bindValue(':idAnimal', $obj['idAnimal']);
+                    $stmt->bindValue(':id', $obj['id']);
                 } else {
+                    $a = true;
                     foreach ($obj as $key => $value) {
-                        $query .= " AND " . $key . " LIKE :" . $key;
+                        $text = " AND " . $key . " LIKE :" . $key;
+                        if ($a) {
+                            $text = " WHERE " . $key . " LIKE :" . $key;
+                            $a = false;
+                        }
+                        $query .= $text;
                     }
-                    $query .= $queryLimit;
                     $stmt = $db->prepare($query);
                     foreach ($obj as $key => &$val) {
                         $stmt->bindValue($key, "%$val%");
                     }
                 }
             } else {
-                $query .= $queryLimit;
+                $query .= "WHERE organizacao_id=" . $org;
                 $stmt = $db->prepare($query);
             }
-            if ($limite !== null) {
-                $stmt->bindValue(':limite', (int)trim($limite), PDO::PARAM_INT);
-            }
+
             $stmt->execute();
             if (!empty($stmt->rowCount())) {
                 $codigo = 200;
@@ -126,7 +122,8 @@ class TimeDAO implements IDAO
                 $messagem = "Não foi possivel realizar a busca";
             }
 
-        } catch (Exception $e) {
+        } catch
+        (Exception $e) {
             $codigo = 400;
             $messagem = $e->getMessage();
         }
@@ -142,10 +139,10 @@ class TimeDAO implements IDAO
         $messagem = "Erro inesperado";
         try {
             $db = Banco::conexao();
-            $query = "UPDATE animais SET status = 'DESATIVADO' WHERE idAnimal=:idAnimal";
+            $query = "DELETE FROM  time WHERE id=:id";
 
             $stmt = $db->prepare($query);
-            $stmt->bindParam(':idAnimal', $obj['idAnimal'], PDO::PARAM_INT);
+            $stmt->bindParam(':id', $obj['id'], PDO::PARAM_INT);
 
             $stmt->execute();
             $messagem = "Deletado com sucesso";
