@@ -10,6 +10,7 @@ namespace controller;
 
 
 use model\Animal;
+use model\Jogador;
 use model\Time;
 use model\validate\AnimalValidate;
 use model\validate\TimeValidate;
